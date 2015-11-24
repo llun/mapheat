@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/llun/map-heatmap.git"
+    "url": "git+https://github.com/llun/mapheat.git"
   },
   "keywords": [
     "map",
@@ -26,9 +26,9 @@
   "author": "Maythee Anegboonlap <null@llun.in.th>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/llun/map-heatmap/issues"
+    "url": "https://github.com/llun/mapheat/issues"
   },
-  "homepage": "https://github.com/llun/map-heatmap#readme",
+  "homepage": "https://github.com/llun/mapheat#readme",
   "dependencies": {
     "canvas": "^1.3.4",
     "simpleheat": "llun/simpleheat#gh-pages",
