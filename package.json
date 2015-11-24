@@ -1,7 +1,7 @@
 {
-  "name": "map-heatmap",
+  "name": "mapheat",
   "version": "1.0.0",
-  "description": "Create an heatmap image for overlaying on map",
+  "description": "Create an heatmap image for overlaying on the map",
   "main": "lib/heatmap.js",
   "browser": "dist/heatmap.js",
   "browserify": {
