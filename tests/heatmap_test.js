@@ -84,23 +84,23 @@ describe('Heatmap', () => {
 
     beforeEach(() => {
       heatmap = new Heatmap
-      heatmap.addPoint(point, heatmap.blocks)
+      heatmap.addPoint(point, heatmap._blocks)
     })
 
     it ('adds point to all and points in center box', () => {
       let key = '103.4,12.5,103.5,12.6'
-      expect(heatmap.blocks).to.include.keys(key)
-      expect(heatmap.blocks[key].all.size).to.equal(1)
-      expect(heatmap.blocks[key].points.size).to.equal(1)
+      expect(heatmap._blocks).to.include.keys(key)
+      expect(heatmap._blocks[key].all.size).to.equal(1)
+      expect(heatmap._blocks[key].points.size).to.equal(1)
     })
 
     it ('adds point to all in boxes around the center', () => {
       let keys = ['103.4,12.4,103.5,12.5', '103.5,12.5,103.6,12.6',
         '103.4,12.6,103.5,12.7', '103.3,12.5,103.4,12.6']
       keys.forEach(key => {
-        expect(heatmap.blocks).to.include.keys(key)
-        expect(heatmap.blocks[key].all.size).to.equal(1)
-        expect(heatmap.blocks[key].points.size).to.equal(0)
+        expect(heatmap._blocks).to.include.keys(key)
+        expect(heatmap._blocks[key].all.size).to.equal(1)
+        expect(heatmap._blocks[key].points.size).to.equal(0)
       })
     })
 
@@ -156,10 +156,23 @@ describe('Heatmap', () => {
       heatmap.import(JSON.parse(data))
     })
 
+    describe('#blocks', () => {
+
+      it ('returns all blocks that have data', () => {
+        expect(heatmap.blocks().length).to.equal(2)
+      })
+
+      it ('returns block object', () => {
+        let block = heatmap.blocks()[0]
+        expect(block).to.have.all.keys('key', 'points', 'all', 'bounds')
+      })
+
+    })
+
     describe('#import', () => {
 
       it ('adds all data points to blocks', () => {
-        expect(Object.keys(heatmap.blocks).length).to.equal(8)
+        expect(heatmap.blocks().length).to.equal(2)
       })
 
     })
