@@ -70,6 +70,10 @@ describe('Heatmap', () => {
       expect(heatmap.bounds(key)).to.deep.equal({
         min: { x: 103.3, y: 12.4 },
         max: { x: 103.6, y: 12.7 },
+        canvas: {
+          min: { x: 103.4, y: 12.5 },
+          max: { x: 103.5, y: 12.6 }
+        },
         radians: 0.0011377370489601272,
         size: 32.59052667505927
       })
