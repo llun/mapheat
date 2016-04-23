@@ -19,9 +19,9 @@
     ]
   },
   "scripts": {
-    "build": "mkdir -p dist && browserify --exclude canvas --no-builtins lib/heatmap.js -o dist/heatmap.js",
     "lint": "eslint lib/ tests/",
-    "test": "jasmine"
+    "test": "npm run lint && jasmine",
+    "build": "rm -r dist && npm run test && mkdir -p dist && browserify --exclude canvas --no-builtins lib/heatmap.js -o dist/heatmap.js"
   },
   "repository": {
     "type": "git",
