@@ -1,4 +1,6 @@
 // @ts-check
+const turf = require('@turf/turf');
+
 /**
  * @typedef {{ size: number }} Option
  */
@@ -49,6 +51,42 @@ class MapHeat {
     return `${minX},${minY},${maxX.toFixed(degreeExp)},${maxY.toFixed(
       degreeExp
     )}`;
+  }
+
+  /**
+   *
+   * @param {string} key
+   * @return {import('./types').Boundary}
+   */
+  bounds(key) {
+    const keys = key.split(',').map((item) => parseFloat(item));
+    const exp = Math.abs(+degree.toExponential().split('e')[1]);
+
+    const minX = +(keys[0] - degree).toFixed(exp);
+    const maxX = +(keys[2] + degree).toFixed(exp);
+    const minY = +(keys[1] - degree).toFixed(exp);
+    const maxY = +(keys[3] + degree).toFixed(exp);
+
+    const nw = turf.point([minX, maxY]);
+    const ne = turf.point([maxX, maxY]);
+    const sw = turf.point([minX, minY]);
+    const se = turf.point([maxX, minY]);
+
+    const km1 = turf.distance(nw, ne);
+    const km2 = turf.distance(nw, sw);
+    const km3 = turf.distance(sw, se);
+
+    const radians = Math.asin((km3 - km1) / km2);
+    return {
+      min: { longitude: minX, latitude: minY },
+      max: { longitude: maxX, latitude: maxY },
+      canvas: {
+        min: { longitude: +keys[0], latitude: +keys[1] },
+        max: { longitude: +keys[2], latitude: +keys[3] }
+      },
+      size: km3,
+      radians
+    };
   }
 
   /**

@@ -39,3 +39,19 @@ test('MapHeat#decimalAdjust', (t) => {
   t.is(mapheat.decimalAdjust(-value), -123);
   t.is(mapheat.decimalAdjust(-value, 1), -123.4);
 });
+
+test('MapHeat#bounds', (t) => {
+  const { mapheat } = /** @type {Context} */ (t.context);
+  const key = '103.4,12.5,103.5,12.6';
+
+  t.deepEqual(mapheat.bounds(key), {
+    min: { longitude: 103.3, latitude: 12.4 },
+    max: { longitude: 103.6, latitude: 12.7 },
+    canvas: {
+      min: { longitude: 103.4, latitude: 12.5 },
+      max: { longitude: 103.5, latitude: 12.6 }
+    },
+    radians: 0.0011377370489601083,
+    size: 32.580343989241705
+  });
+});
