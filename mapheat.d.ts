@@ -1,4 +1,4 @@
-import type { Point, Position } from "./types";
+import type { Point, Position } from './types';
 
 declare class MapHeat {
   key(point: Point, position?: Position): string;

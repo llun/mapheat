@@ -8,7 +8,7 @@ class MapHeat {
   constructor(/** @type {Option} */ options) {
     /** @type {Option} */
     this.options = options || {
-      size: 3000,
+      size: 3000
     };
     this.blocks = {};
   }
@@ -25,22 +25,22 @@ class MapHeat {
     let latitude = point.latitude;
 
     switch (position) {
-      case "top":
+      case 'top':
         latitude += degree;
         break;
-      case "bottom":
+      case 'bottom':
         latitude -= degree;
         break;
-      case "left":
+      case 'left':
         longitude -= degree;
         break;
-      case "right":
+      case 'right':
         longitude += degree;
         break;
     }
 
     // Floor down the locations
-    const degreeExp = Math.abs(+degree.toExponential().split("e")[1]);
+    const degreeExp = Math.abs(+degree.toExponential().split('e')[1]);
     const minX = this.decimalAdjust(longitude, degreeExp);
     const minY = this.decimalAdjust(latitude, degreeExp);
     const maxX = minX + degree;
@@ -60,9 +60,9 @@ class MapHeat {
    */
   decimalAdjust(value, exp) {
     if (!exp) exp = 0;
-    const expValue = Math.abs(value).toExponential().split("e");
+    const expValue = Math.abs(value).toExponential().split('e');
     const shiftValue = +`${expValue[0]}e${+expValue[1] + exp}`;
-    const floorValue = Math.floor(shiftValue).toExponential().split("e");
+    const floorValue = Math.floor(shiftValue).toExponential().split('e');
     const reverseValue = +`${floorValue[0]}e${+floorValue[1] - exp}`;
 
     return reverseValue * (value < 0 ? -1 : 1);

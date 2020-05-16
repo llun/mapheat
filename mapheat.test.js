@@ -1,35 +1,35 @@
 // @ts-check
-const fs = require("fs");
-const crypto = require("crypto");
-const test = require("ava").default;
+const fs = require('fs');
+const crypto = require('crypto');
+const test = require('ava').default;
 
-const MapHeat = require("./mapheat");
+const MapHeat = require('./mapheat');
 
 /**
  * @typedef {{ mapheat: MapHeat }} Context
  */
 test.beforeEach((t) => {
   t.context = {
-    mapheat: new MapHeat(),
+    mapheat: new MapHeat()
   };
 });
 
-test("MapHeat#key", (t) => {
+test('MapHeat#key', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const location = /** @type {import('./types').Point} */ ({
     longitude: 103.412,
-    latitude: 12.5231,
+    latitude: 12.5231
   });
 
-  t.is(mapheat.key(location), "103.4,12.5,103.5,12.6");
-  t.is(mapheat.key(location, "center"), "103.4,12.5,103.5,12.6");
-  t.is(mapheat.key(location, "left"), "103.3,12.5,103.4,12.6");
-  t.is(mapheat.key(location, "right"), "103.5,12.5,103.6,12.6");
-  t.is(mapheat.key(location, "top"), "103.4,12.6,103.5,12.7");
-  t.is(mapheat.key(location, "bottom"), "103.4,12.4,103.5,12.5");
+  t.is(mapheat.key(location), '103.4,12.5,103.5,12.6');
+  t.is(mapheat.key(location, 'center'), '103.4,12.5,103.5,12.6');
+  t.is(mapheat.key(location, 'left'), '103.3,12.5,103.4,12.6');
+  t.is(mapheat.key(location, 'right'), '103.5,12.5,103.6,12.6');
+  t.is(mapheat.key(location, 'top'), '103.4,12.6,103.5,12.7');
+  t.is(mapheat.key(location, 'bottom'), '103.4,12.4,103.5,12.5');
 });
 
-test("MapHeat#decimalAdjust", (t) => {
+test('MapHeat#decimalAdjust', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const value = 123.4432;
 

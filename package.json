@@ -4,6 +4,7 @@
   "description": "Create an heatmap image for overlaying on the map",
   "main": "index.js",
   "scripts": {
+    "lint": "yarn run prettier --config .prettierrc.yml --check {**/*,*}.{js,ts}",
     "test": "ava"
   },
   "author": "",
