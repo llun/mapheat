@@ -15,3 +15,14 @@ export type Boundary = {
   radians: number;
   size: number;
 };
+
+export type Block = {
+  points: Set<Point>;
+  all: Set<Point>;
+  bounds: Boundary;
+  key: string;
+};
+
+export type Blocks = {
+  [key in string]: Block;
+};

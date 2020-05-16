@@ -19,7 +19,7 @@ class MapHeat {
    * Block key
    *
    * @param {import('./types').Point} point
-   * @param {import('./types').Position?} position
+   * @param {import('./types').Position} [position]
    */
   key(point, position) {
     // Alter the key base on the position
@@ -90,14 +90,41 @@ class MapHeat {
   }
 
   /**
+   *
+   * @param {import('./types').Point} point
+   * @param {import('./types').Blocks} blocks
+   */
+  addPoint(point, blocks) {
+    const centerKey = this.key(point);
+    const topKey = this.key(point, 'top');
+    const leftKey = this.key(point, 'left');
+    const bottomKey = this.key(point, 'bottom');
+    const rightKey = this.key(point, 'right');
+    const keys = [centerKey, topKey, leftKey, bottomKey, rightKey];
+
+    keys.forEach((key) => {
+      if (!blocks[key]) {
+        blocks[key] = {
+          points: new Set(),
+          all: new Set(),
+          bounds: this.bounds(key),
+          key
+        };
+      }
+
+      blocks[key].all.add(point);
+    });
+    blocks[centerKey].points.add(point);
+  }
+
+  /**
    * Decimal adjustment of a number
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor
    *
    * @param {number} value
-   * @param {number?} exp
+   * @param {number} [exp]
    */
-  decimalAdjust(value, exp) {
-    if (!exp) exp = 0;
+  decimalAdjust(value, exp = 0) {
     const expValue = Math.abs(value).toExponential().split('e');
     const shiftValue = +`${expValue[0]}e${+expValue[1] + exp}`;
     const floorValue = Math.floor(shiftValue).toExponential().split('e');

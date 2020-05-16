@@ -55,3 +55,29 @@ test('MapHeat#bounds', (t) => {
     size: 32.580343989241705
   });
 });
+
+test('MapHeat#addPoint', (t) => {
+  const { mapheat } = /** @type {Context} */ (t.context);
+  const blocks = /** @type {import('./types').Blocks} */ ({});
+  const point = { longitude: 103.412, latitude: 12.5231 };
+  const key = '103.4,12.5,103.5,12.6';
+
+  mapheat.addPoint(point, blocks);
+  t.true(Object.keys(blocks).includes(key));
+  t.is(blocks[key].all.size, 1);
+  t.is(blocks[key].points.size, 1);
+
+  const keys = [
+    '103.4,12.4,103.5,12.5',
+    '103.5,12.5,103.6,12.6',
+    '103.4,12.6,103.5,12.7',
+    '103.3,12.5,103.4,12.6'
+  ];
+  for (const key of keys) {
+    t.is(blocks[key].points.size, 0);
+  }
+
+  mapheat.addPoint(point, blocks);
+  t.is(blocks[key].all.size, 1);
+  t.is(blocks[key].points.size, 1);
+});
