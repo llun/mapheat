@@ -151,7 +151,7 @@ test('MapHeat#write without blur', (t) => {
   t.is(file2hash2.digest('hex'), file2hash1.digest('hex'));
 });
 
-test('MapHeat#write with blur', (t) => {
+test.skip('MapHeat#write with blur', (t) => {
   t.teardown(() => {
     const dir = `${__dirname}/spec/blur_blocks`;
     try {
