@@ -33,11 +33,11 @@ test('MapHeat#decimalAdjust', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const value = 123.4432;
 
-  t.is(mapheat.decimalAdjust(value), 123);
-  t.is(mapheat.decimalAdjust(value, 1), 123.4);
-  t.is(mapheat.decimalAdjust(value, 2), 123.44);
-  t.is(mapheat.decimalAdjust(-value), -123);
-  t.is(mapheat.decimalAdjust(-value, 1), -123.4);
+  t.is(mapheat.decimalAdjust('floor', value), 123);
+  t.is(mapheat.decimalAdjust('floor', value, 1), 123.4);
+  t.is(mapheat.decimalAdjust('floor', value, 2), 123.44);
+  t.is(mapheat.decimalAdjust('floor', -value), -123);
+  t.is(mapheat.decimalAdjust('floor', -value, 1), -123.4);
 });
 
 test('MapHeat#bounds', (t) => {
@@ -80,4 +80,25 @@ test('MapHeat#addPoint', (t) => {
   mapheat.addPoint(point, blocks);
   t.is(blocks[key].all.size, 1);
   t.is(blocks[key].points.size, 1);
+});
+
+test('MapHeat#draw', (t) => {
+  const { mapheat } = /** @type {Context} */ (t.context);
+  const block = /** @type {import('./types').Block} */ ({
+    points: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
+    all: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
+    bounds: {
+      min: { longitude: 103.3, latitude: 12.4 },
+      max: { longitude: 103.6, latitude: 12.7 },
+      radians: 0.0011377370489601272,
+      size: 32.59052667505927
+    }
+  });
+  const canvas = mapheat.draw(block);
+  const hash1 = crypto.createHash('md5');
+  hash1.update(canvas.toBuffer());
+
+  const hash2 = crypto.createHash('md5');
+  hash2.update(fs.readFileSync(`${__dirname}/spec/blank.png`));
+  t.is(hash2.digest('hex'), hash1.digest('hex'));
 });

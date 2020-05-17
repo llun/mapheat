@@ -4,7 +4,7 @@ const turf = require('@turf/turf');
 const { createCanvas } = require('canvas');
 
 /**
- * @typedef {{ size: number, radius: number, gradient: { [key in number]: string } }} Option
+ * @typedef {{ size: number, radius: number, blur: number, gradient: { [key in number]: string } }} Option
  */
 const degree = 0.1;
 
@@ -14,6 +14,7 @@ class MapHeat {
     this.options = options || {
       size: 3000,
       radius: 2,
+      blur: 3,
       gradient: {
         0.4: 'blue',
         0.6: 'cyan',
@@ -146,9 +147,10 @@ class MapHeat {
   /**
    *
    * @param {import('./types').Block} block
+   * @return {import('canvas').Canvas}
    */
   draw(block) {
-    const { size, radius, gradient } = this.options;
+    const { size, radius, blur, gradient } = this.options;
     const points = Array.from(block.all).map((point) => {
       const origin = turf.point([point.longitude, point.latitude]);
       const originLeft = turf.point([
@@ -174,8 +176,6 @@ class MapHeat {
     const canvas = createCanvas(size, size);
     const ctx = canvas.getContext('2d');
 
-    const blur = 3;
-    const r2 = radius + blur;
     ctx.shadowOffsetY = ctx.shadowOffsetX = 0;
     ctx.shadowBlur = blur;
     ctx.shadowColor = 'rgba(0,0,0,0.05)';
@@ -212,8 +212,22 @@ class MapHeat {
     }
     ctx.putImageData(pixels, 0, 0);
 
-    const buf = canvas.toBuffer();
-    fs.writeFileSync('test.png', buf);
+    const cropSize = size / 3;
+    const crop = createCanvas(cropSize, cropSize);
+    const cropContext = crop.getContext('2d');
+
+    cropContext.drawImage(
+      canvas,
+      cropSize,
+      cropSize,
+      cropSize,
+      cropSize,
+      0,
+      0,
+      cropSize,
+      cropSize
+    );
+    return crop;
   }
 }
 
