@@ -47,10 +47,6 @@ test('MapHeat#bounds', (t) => {
   t.deepEqual(mapheat.bounds(key), {
     min: { longitude: 103.3, latitude: 12.4 },
     max: { longitude: 103.6, latitude: 12.7 },
-    canvas: {
-      min: { longitude: 103.4, latitude: 12.5 },
-      max: { longitude: 103.5, latitude: 12.6 }
-    },
     radians: 0.0011377370489601083,
     size: 32.580343989241705
   });
@@ -88,8 +84,14 @@ test('MapHeat#draw', (t) => {
     points: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
     all: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
     bounds: {
-      min: { longitude: 103.3, latitude: 12.4 },
-      max: { longitude: 103.6, latitude: 12.7 },
+      min: {
+        longitude: 103.3,
+        latitude: 12.4
+      },
+      max: {
+        longitude: 103.6,
+        latitude: 12.7
+      },
       radians: 0.0011377370489601272,
       size: 32.59052667505927
     }
@@ -97,8 +99,101 @@ test('MapHeat#draw', (t) => {
   const canvas = mapheat.draw(block);
   const hash1 = crypto.createHash('md5');
   hash1.update(canvas.toBuffer());
-
   const hash2 = crypto.createHash('md5');
   hash2.update(fs.readFileSync(`${__dirname}/spec/blank.png`));
   t.is(hash2.digest('hex'), hash1.digest('hex'));
+});
+
+test('MapHeat#write without blur', (t) => {
+  t.teardown(() => {
+    const dir = `${__dirname}/spec/blocks`;
+    try {
+      fs.accessSync(dir);
+      const blocksDir = fs.readdirSync(dir);
+      for (const file of blocksDir) {
+        fs.unlinkSync(`${dir}/${file}`);
+      }
+      fs.rmdirSync(dir);
+    } catch (error) {
+      // Ignore non-exist blocks
+    }
+  });
+  const { mapheat } = /** @type {Context} */ (t.context);
+  mapheat.setBlur(0);
+  const blocks = /** @type {import('./types').Blocks} */ ({});
+  const data = JSON.parse(
+    fs.readFileSync(`${__dirname}/spec/data.json`).toString('utf-8')
+  );
+  for (const point of data) {
+    mapheat.addPoint(point, blocks);
+  }
+
+  const dir = `${__dirname}/spec/blocks`;
+  mapheat.write(dir, blocks);
+  t.notThrows(() => {
+    fs.accessSync(dir);
+  }, 'MapHeat should create dir when writes blocks');
+
+  t.is(fs.readdirSync(dir).length, 2);
+
+  const file1 = '103.8,1.2,103.9,1.3.png';
+  const file1hash1 = crypto.createHash('md5');
+  file1hash1.update(fs.readFileSync(`${__dirname}/spec/${file1}`));
+  const file1hash2 = crypto.createHash('md5');
+  file1hash2.update(fs.readFileSync(`${dir}/${file1}`));
+  t.is(file1hash2.digest('hex'), file1hash1.digest('hex'));
+
+  const file2 = '103.8,1.3,103.9,1.4.png';
+  const file2hash1 = crypto.createHash('md5');
+  file2hash1.update(fs.readFileSync(`${__dirname}/spec/${file2}`));
+  const file2hash2 = crypto.createHash('md5');
+  file2hash2.update(fs.readFileSync(`${dir}/${file2}`));
+  t.is(file2hash2.digest('hex'), file2hash1.digest('hex'));
+});
+
+test('MapHeat#write with blur', (t) => {
+  t.teardown(() => {
+    const dir = `${__dirname}/spec/blur_blocks`;
+    try {
+      fs.accessSync(dir);
+      const blocksDir = fs.readdirSync(dir);
+      for (const file of blocksDir) {
+        fs.unlinkSync(`${dir}/${file}`);
+      }
+      fs.rmdirSync(dir);
+    } catch (error) {
+      // Ignore non-exist blocks
+    }
+  });
+  const { mapheat } = /** @type {Context} */ (t.context);
+  mapheat.setBlur(3);
+  const blocks = /** @type {import('./types').Blocks} */ ({});
+  const data = JSON.parse(
+    fs.readFileSync(`${__dirname}/spec/data.json`).toString('utf-8')
+  );
+  for (const point of data) {
+    mapheat.addPoint(point, blocks);
+  }
+
+  const dir = `${__dirname}/spec/blur_blocks`;
+  mapheat.write(dir, blocks);
+  t.notThrows(() => {
+    fs.accessSync(dir);
+  }, 'MapHeat should create dir when writes blocks');
+
+  t.is(fs.readdirSync(dir).length, 2);
+
+  const file1 = '103.8,1.2,103.9,1.3.png';
+  const file1hash1 = crypto.createHash('md5');
+  file1hash1.update(fs.readFileSync(`${__dirname}/spec/blur_${file1}`));
+  const file1hash2 = crypto.createHash('md5');
+  file1hash2.update(fs.readFileSync(`${dir}/${file1}`));
+  t.is(file1hash2.digest('hex'), file1hash1.digest('hex'));
+
+  const file2 = '103.8,1.3,103.9,1.4.png';
+  const file2hash1 = crypto.createHash('md5');
+  file2hash1.update(fs.readFileSync(`${__dirname}/spec/blur_${file2}`));
+  const file2hash2 = crypto.createHash('md5');
+  file2hash2.update(fs.readFileSync(`${dir}/${file2}`));
+  t.is(file2hash2.digest('hex'), file2hash1.digest('hex'));
 });

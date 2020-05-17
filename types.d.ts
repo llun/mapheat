@@ -8,10 +8,6 @@ export type Point = {
 export type Boundary = {
   min: Point;
   max: Point;
-  canvas: {
-    min: Point;
-    max: Point;
-  };
   radians: number;
   size: number;
 };
@@ -25,4 +21,11 @@ export type Block = {
 
 export type Blocks = {
   [key in string]: Block;
+};
+
+export type Parameters = {
+  size: number;
+  radius: number;
+  blur: number;
+  gradient: { [key in number]: string };
 };

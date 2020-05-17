@@ -1,21 +1,18 @@
 // @ts-check
 const fs = require('fs');
 const turf = require('@turf/turf');
+const StackBlur = require('stackblur-canvas');
 const { createCanvas } = require('canvas');
 
-/**
- * @typedef {{ size: number, radius: number, blur: number, gradient: { [key in number]: string } }} Option
- */
 const degree = 0.1;
-
 class MapHeat {
-  constructor(/** @type {Option} */ options) {
-    /** @type {Option} */
-    this.options = options || {
-      size: 3000,
-      radius: 2,
-      blur: 3,
-      gradient: {
+  constructor(/** @type {import('./types').Parameters} */ parameters) {
+    /** @type {import('./types').Parameters} */
+    this.parameters = {
+      size: (parameters && parameters.size) || 3000,
+      radius: (parameters && parameters.radius) || 2,
+      blur: (parameters && parameters.blur) || 0,
+      gradient: (parameters && parameters.gradient) || {
         0.4: 'blue',
         0.6: 'cyan',
         0.7: 'lime',
@@ -23,7 +20,14 @@ class MapHeat {
         1.0: 'red'
       }
     };
-    this.blocks = {};
+  }
+
+  /**
+   *
+   * @param {number} blur
+   */
+  setBlur(blur) {
+    this.parameters.blur = blur;
   }
 
   /**
@@ -91,10 +95,6 @@ class MapHeat {
     return {
       min: { longitude: minX, latitude: minY },
       max: { longitude: maxX, latitude: maxY },
-      canvas: {
-        min: { longitude: +keys[0], latitude: +keys[1] },
-        max: { longitude: +keys[2], latitude: +keys[3] }
-      },
       size: km3,
       radians
     };
@@ -146,11 +146,11 @@ class MapHeat {
 
   /**
    *
-   * @param {import('./types').Block} block
+   * @param {{all: Set<{latitude: number, longitude: number}>, bounds: {min: {latitude: number, longitude: number}, size: number, max: {latitude: number, longitude: number}, radians: number}, points: Set<{latitude: number, longitude: number}>}} block
    * @return {import('canvas').Canvas}
    */
   draw(block) {
-    const { size, radius, blur, gradient } = this.options;
+    const { size, radius, blur, gradient } = this.parameters;
     const points = Array.from(block.all).map((point) => {
       const origin = turf.point([point.longitude, point.latitude]);
       const originLeft = turf.point([
@@ -176,16 +176,33 @@ class MapHeat {
     const canvas = createCanvas(size, size);
     const ctx = canvas.getContext('2d');
 
-    ctx.shadowOffsetY = ctx.shadowOffsetX = 0;
-    ctx.shadowBlur = blur;
-    ctx.shadowColor = 'rgba(0,0,0,0.05)';
-    ctx.fillStyle = 'rgba(0,0,0,0.01)';
+    if (blur !== 0) {
+      ctx.shadowOffsetY = ctx.shadowOffsetX = 0;
+      ctx.shadowBlur = blur + radius;
+      ctx.shadowColor = 'rgba(0,0,0,0.06)';
+      ctx.fillStyle = 'rgba(0,0,0,0.02)';
+    } else {
+      ctx.fillStyle = 'rgba(0,0,0,0.042)';
+    }
+
     for (const point of points) {
       const [x, y] = point;
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.closePath();
       ctx.fill();
+    }
+
+    if (blur === 0) {
+      const blurData = StackBlur.imageDataRGBA(
+        ctx.getImageData(0, 0, size, size),
+        0,
+        0,
+        size,
+        size,
+        2
+      );
+      ctx.putImageData(blurData, 0, 0);
     }
 
     // Create gradient data with list of gradient stop color
@@ -228,6 +245,30 @@ class MapHeat {
       cropSize
     );
     return crop;
+  }
+
+  /**
+   *
+   * @param {string} dir
+   * @param {import('./types').Blocks} blocks
+   */
+  write(dir, blocks) {
+    try {
+      fs.accessSync(dir);
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
+      fs.mkdirSync(dir);
+    }
+    const nonEmptyBlocks = Object.keys(blocks).filter(
+      (block) => blocks[block].points.size > 0
+    );
+    for (const block of nonEmptyBlocks) {
+      const path = `${dir}/${block}.png`;
+      const canvas = this.draw(blocks[block]);
+      fs.writeFileSync(path, canvas.toBuffer());
+    }
   }
 }
 
