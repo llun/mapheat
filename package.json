@@ -1,6 +1,6 @@
 {
   "name": "mapheat",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Create an heatmap image for overlaying on the map",
   "main": "mapheat.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "Maythee Anegboonlap <null@llun.me>",
   "license": "ISC",
   "dependencies": {
-    "@turf/turf": "^5.1.6",
+    "@turf/distance": "^6.0.1",
     "canvas": "^2.6.1",
     "stackblur-canvas": "^2.3.0"
   },

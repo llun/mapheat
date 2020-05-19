@@ -1,6 +1,7 @@
 // @ts-check
 const fs = require('fs');
-const turf = require('@turf/turf');
+const { point } = require('@turf/helpers');
+const distance = require('@turf/distance').default;
 const StackBlur = require('stackblur-canvas');
 const { createCanvas } = require('canvas');
 
@@ -82,14 +83,14 @@ class MapHeat {
     const minY = +(keys[1] - degree).toFixed(exp);
     const maxY = +(keys[3] + degree).toFixed(exp);
 
-    const nw = turf.point([minX, maxY]);
-    const ne = turf.point([maxX, maxY]);
-    const sw = turf.point([minX, minY]);
-    const se = turf.point([maxX, minY]);
+    const nw = point([minX, maxY]);
+    const ne = point([maxX, maxY]);
+    const sw = point([minX, minY]);
+    const se = point([maxX, minY]);
 
-    const km1 = turf.distance(nw, ne);
-    const km2 = turf.distance(nw, sw);
-    const km3 = turf.distance(sw, se);
+    const km1 = distance(nw, ne);
+    const km2 = distance(nw, sw);
+    const km3 = distance(sw, se);
 
     const radians = Math.asin((km3 - km1) / km2);
     return {
@@ -151,18 +152,12 @@ class MapHeat {
    */
   draw(block) {
     const { size, radius, blur, gradient } = this.parameters;
-    const points = Array.from(block.all).map((point) => {
-      const origin = turf.point([point.longitude, point.latitude]);
-      const originLeft = turf.point([
-        block.bounds.min.longitude,
-        point.latitude
-      ]);
-      const originBottom = turf.point([
-        point.longitude,
-        block.bounds.min.latitude
-      ]);
-      const q1 = turf.distance(originLeft, origin);
-      const q3 = turf.distance(origin, originBottom);
+    const points = Array.from(block.all).map((p) => {
+      const origin = point([p.longitude, p.latitude]);
+      const originLeft = point([block.bounds.min.longitude, p.latitude]);
+      const originBottom = point([p.longitude, block.bounds.min.latitude]);
+      const q1 = distance(originLeft, origin);
+      const q3 = distance(origin, originBottom);
       const q2 = q3 * Math.sin(block.bounds.radians);
       const q4 = q3 * Math.cos(block.bounds.radians);
 
