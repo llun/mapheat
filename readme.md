@@ -1,6 +1,6 @@
 # Mapheat
 
-Create images for overlaying on the map.
+Create heatmap images for overlaying on the map
 
 ## Usage
 
