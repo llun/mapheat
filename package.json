@@ -1,6 +1,6 @@
 {
   "name": "mapheat",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Create heatmap images for overlaying on the map",
   "main": "mapheat.js",
   "scripts": {
@@ -20,9 +20,9 @@
     "stackblur-canvas": "^2.3.0"
   },
   "devDependencies": {
-    "@types/node": "^14.0.13",
-    "ava": "^3.9.0",
+    "@types/node": "^14.0.24",
+    "ava": "^3.10.1",
     "prettier": "^2.0.5",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.7"
   }
 }
