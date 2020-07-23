@@ -134,21 +134,21 @@ test('MapHeat#write without blur', (t) => {
     fs.accessSync(dir);
   }, 'MapHeat should create dir when writes blocks');
 
-  t.is(fs.readdirSync(dir).length, 2);
+  t.is(fs.readdirSync(dir).length, 2, 'Generate more than expected tiles');
 
   const file1 = '103.8,1.2,103.9,1.3.png';
   const file1hash1 = crypto.createHash('md5');
   file1hash1.update(fs.readFileSync(`${__dirname}/spec/${file1}`));
   const file1hash2 = crypto.createHash('md5');
   file1hash2.update(fs.readFileSync(`${dir}/${file1}`));
-  t.is(file1hash2.digest('hex'), file1hash1.digest('hex'));
+  t.is(file1hash2.digest('hex'), file1hash1.digest('hex'), 'fail block 1');
 
   const file2 = '103.8,1.3,103.9,1.4.png';
   const file2hash1 = crypto.createHash('md5');
   file2hash1.update(fs.readFileSync(`${__dirname}/spec/${file2}`));
   const file2hash2 = crypto.createHash('md5');
   file2hash2.update(fs.readFileSync(`${dir}/${file2}`));
-  t.is(file2hash2.digest('hex'), file2hash1.digest('hex'));
+  t.is(file2hash2.digest('hex'), file2hash1.digest('hex'), 'fail block 2');
 });
 
 test.skip('MapHeat#write with blur', (t) => {
