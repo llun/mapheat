@@ -141,14 +141,27 @@ test('MapHeat#write without blur', (t) => {
   file1hash1.update(fs.readFileSync(`${__dirname}/spec/${file1}`));
   const file1hash2 = crypto.createHash('md5');
   file1hash2.update(fs.readFileSync(`${dir}/${file1}`));
-  t.is(file1hash2.digest('hex'), file1hash1.digest('hex'), 'fail block 1');
+  const file1hash1Hex = file1hash1.digest('hex');
+  const file1hash2Hex = file1hash2.digest('hex');
+  t.is(
+    file1hash1Hex,
+    file1hash2Hex,
+    `fail block 1 (${file1hash1Hex} <> ${file1hash2Hex})`
+  );
 
   const file2 = '103.8,1.3,103.9,1.4.png';
   const file2hash1 = crypto.createHash('md5');
   file2hash1.update(fs.readFileSync(`${__dirname}/spec/${file2}`));
   const file2hash2 = crypto.createHash('md5');
   file2hash2.update(fs.readFileSync(`${dir}/${file2}`));
-  t.is(file2hash2.digest('hex'), file2hash1.digest('hex'), 'fail block 2');
+
+  const file2hash1Hex = file2hash1.digest('hex');
+  const file2hash2Hex = file2hash2.digest('hex');
+  t.is(
+    file2hash1Hex,
+    file2hash2Hex,
+    `fail block 2 (${file2hash1Hex} <> ${file2hash2Hex})`
+  );
 });
 
 test.skip('MapHeat#write with blur', (t) => {
