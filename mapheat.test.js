@@ -1,5 +1,7 @@
 // @ts-check
 const fs = require('fs');
+const PNG = require('pngjs').PNG;
+const pixelmatch = require('pixelmatch');
 const crypto = require('crypto');
 const test = require('ava').default;
 
@@ -137,10 +139,30 @@ test('MapHeat#write without blur', (t) => {
   t.is(fs.readdirSync(dir).length, 2, 'Generate more than expected tiles');
 
   const file1 = '103.8,1.2,103.9,1.3.png';
+  const file2 = '103.8,1.3,103.9,1.4.png';
+
+  const file1img1 = PNG.sync.read(
+    fs.readFileSync(`${__dirname}/spec/${file1}`)
+  );
+  const file1img2 = PNG.sync.read(fs.readFileSync(`${dir}/${file1}`));
+  const diff1 = new PNG({ width: file1img1.width, height: file1img1.height });
+
+  pixelmatch(
+    file1img1.data,
+    file1img2.data,
+    diff1.data,
+    file1img1.width,
+    file1img1.height,
+    {
+      threshold: 0.1
+    }
+  );
+  fs.writeFileSync(`${dir}/diff1.png`, PNG.sync.write(diff1));
+
   const file1hash1 = crypto.createHash('md5');
-  file1hash1.update(fs.readFileSync(`${__dirname}/spec/${file1}`));
+  file1hash1.update(fs.readFileSync(`${__dirname}/spec/diff1.png`));
   const file1hash2 = crypto.createHash('md5');
-  file1hash2.update(fs.readFileSync(`${dir}/${file1}`));
+  file1hash2.update(fs.readFileSync(`${dir}/diff1.png`));
   const file1hash1Hex = file1hash1.digest('hex');
   const file1hash2Hex = file1hash2.digest('hex');
   t.is(
@@ -149,11 +171,28 @@ test('MapHeat#write without blur', (t) => {
     `fail block 1 (${file1hash1Hex} <> ${file1hash2Hex})`
   );
 
-  const file2 = '103.8,1.3,103.9,1.4.png';
+  const file2img1 = PNG.sync.read(
+    fs.readFileSync(`${__dirname}/spec/${file2}`)
+  );
+  const file2img2 = PNG.sync.read(fs.readFileSync(`${dir}/${file2}`));
+  const diff2 = new PNG({ width: file2img1.width, height: file2img1.height });
+
+  pixelmatch(
+    file2img2.data,
+    file2img2.data,
+    diff2.data,
+    file2img1.width,
+    file2img1.height,
+    {
+      threshold: 0.1
+    }
+  );
+  fs.writeFileSync(`${dir}/diff2.png`, PNG.sync.write(diff2));
+
   const file2hash1 = crypto.createHash('md5');
-  file2hash1.update(fs.readFileSync(`${__dirname}/spec/${file2}`));
+  file2hash1.update(fs.readFileSync(`${__dirname}/spec/diff2.png`));
   const file2hash2 = crypto.createHash('md5');
-  file2hash2.update(fs.readFileSync(`${dir}/${file2}`));
+  file2hash2.update(fs.readFileSync(`${dir}/diff2.png`));
 
   const file2hash1Hex = file2hash1.digest('hex');
   const file2hash2Hex = file2hash2.digest('hex');
@@ -197,16 +236,53 @@ test.skip('MapHeat#write with blur', (t) => {
   t.is(fs.readdirSync(dir).length, 2);
 
   const file1 = '103.8,1.2,103.9,1.3.png';
+  const file2 = '103.8,1.3,103.9,1.4.png';
+
+  const file1img1 = PNG.sync.read(
+    fs.readFileSync(`${__dirname}/spec/blur_${file1}`)
+  );
+  const file1img2 = PNG.sync.read(fs.readFileSync(`${dir}/${file1}`));
+  const diff1 = new PNG({ width: file1img1.width, height: file1img1.height });
+
+  pixelmatch(
+    file1img1.data,
+    file1img2.data,
+    diff1.data,
+    file1img1.width,
+    file1img1.height,
+    {
+      threshold: 0.1
+    }
+  );
+  fs.writeFileSync(`${dir}/blur_diff1.png`, PNG.sync.write(diff1));
+
   const file1hash1 = crypto.createHash('md5');
-  file1hash1.update(fs.readFileSync(`${__dirname}/spec/blur_${file1}`));
+  file1hash1.update(fs.readFileSync(`${__dirname}/spec/blur_diff1.png`));
   const file1hash2 = crypto.createHash('md5');
-  file1hash2.update(fs.readFileSync(`${dir}/${file1}`));
+  file1hash2.update(fs.readFileSync(`${dir}/blur_diff1.png`));
   t.is(file1hash2.digest('hex'), file1hash1.digest('hex'));
 
-  const file2 = '103.8,1.3,103.9,1.4.png';
+  const file2img1 = PNG.sync.read(
+    fs.readFileSync(`${__dirname}/spec/blur_${file2}`)
+  );
+  const file2img2 = PNG.sync.read(fs.readFileSync(`${dir}/${file2}`));
+  const diff2 = new PNG({ width: file2img1.width, height: file2img1.height });
+
+  pixelmatch(
+    file2img2.data,
+    file2img2.data,
+    diff2.data,
+    file2img1.width,
+    file2img1.height,
+    {
+      threshold: 0.1
+    }
+  );
+  fs.writeFileSync(`${dir}/blur_diff2.png`, PNG.sync.write(diff2));
+
   const file2hash1 = crypto.createHash('md5');
-  file2hash1.update(fs.readFileSync(`${__dirname}/spec/blur_${file2}`));
+  file2hash1.update(fs.readFileSync(`${__dirname}/spec/blur_diff2.png`));
   const file2hash2 = crypto.createHash('md5');
-  file2hash2.update(fs.readFileSync(`${dir}/${file2}`));
+  file2hash2.update(fs.readFileSync(`${dir}/blur_diff2.png`));
   t.is(file2hash2.digest('hex'), file2hash1.digest('hex'));
 });
