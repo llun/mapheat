@@ -99,8 +99,8 @@ test.skip('MapHeat#draw', (t) => {
     }
   });
   const canvas = mapheat.draw(block);
-  // const hash1 = crypto.createHash('md5');
-  // hash1.update(canvas.toBuffer());
+  const hash1 = crypto.createHash('md5');
+  hash1.update(canvas.toBuffer());
   // const hash2 = crypto.createHash('md5');
   // hash2.update(fs.readFileSync(`${__dirname}/spec/blank.png`));
   // t.is(hash2.digest('hex'), hash1.digest('hex'));
