@@ -1,6 +1,6 @@
 {
   "name": "mapheat",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Create heatmap images for overlaying on the map",
   "main": "mapheat.js",
   "scripts": {
