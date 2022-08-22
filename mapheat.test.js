@@ -16,7 +16,7 @@ test.beforeEach((t) => {
   };
 });
 
-test.skip('MapHeat#key', (t) => {
+test('MapHeat#key', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const location = /** @type {import('./types').Point} */ ({
     longitude: 103.412,
@@ -31,7 +31,7 @@ test.skip('MapHeat#key', (t) => {
   t.is(mapheat.key(location, 'bottom'), '103.4,12.4,103.5,12.5');
 });
 
-test.skip('MapHeat#decimalAdjust', (t) => {
+test('MapHeat#decimalAdjust', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const value = 123.4432;
 
@@ -42,7 +42,7 @@ test.skip('MapHeat#decimalAdjust', (t) => {
   t.is(mapheat.decimalAdjust('floor', -value, 1), -123.4);
 });
 
-test.skip('MapHeat#bounds', (t) => {
+test('MapHeat#bounds', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const key = '103.4,12.5,103.5,12.6';
 
@@ -54,7 +54,7 @@ test.skip('MapHeat#bounds', (t) => {
   });
 });
 
-test.skip('MapHeat#addPoint', (t) => {
+test('MapHeat#addPoint', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const blocks = /** @type {import('./types').Blocks} */ ({});
   const point = { longitude: 103.412, latitude: 12.5231 };
@@ -80,7 +80,7 @@ test.skip('MapHeat#addPoint', (t) => {
   t.is(blocks[key].points.size, 1);
 });
 
-test('MapHeat#draw', (t) => {
+test.skip('MapHeat#draw', (t) => {
   const { mapheat } = /** @type {Context} */ (t.context);
   const block = /** @type {import('./types').Block} */ ({
     points: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
@@ -106,7 +106,7 @@ test('MapHeat#draw', (t) => {
   t.is(hash2.digest('hex'), hash1.digest('hex'));
 });
 
-test('MapHeat#write without blur', (t) => {
+test.skip('MapHeat#write without blur', (t) => {
   t.teardown(() => {
     const dir = `${__dirname}/spec/blocks`;
     try {
